@@ -1,0 +1,33 @@
+# Simulation artifacts
+sim/
+*.vcd
+*.vpd
+*.fsdb
+simv*
+csrc/
+*.log
+DVEfiles/
+urgReport/
+AN.DB/
+
+# Generated test programs (recreate with: python3 scripts/riscv_test_gen.py --test all --output-dir tests)
+tests/
+
+# Vivado project (too large; only commit source TCL and constraints)
+vivado_project/
+
+# Yosys outputs (regenerable)
+syn/yosys/riscv_soc_synth.v
+syn/yosys/riscv_soc_synth.json
+syn/yosys/area_report.txt
+syn/yosys/timing_setup.rpt
+syn/yosys/timing_hold.rpt
+syn/yosys/timing_critical_paths.rpt
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db

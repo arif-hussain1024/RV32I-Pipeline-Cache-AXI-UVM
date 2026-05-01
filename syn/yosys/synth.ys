@@ -1,0 +1,52 @@
+# =============================================================================
+# Yosys Synthesis Script for RISC-V SoC
+# Target: SKY130 Open PDK standard cell library
+# =============================================================================
+
+# Read design files
+read_verilog -sv rtl/core/riscv_pkg.sv
+read_verilog -sv rtl/core/program_counter.sv
+read_verilog -sv rtl/core/register_file.sv
+read_verilog -sv rtl/core/decoder.sv
+read_verilog -sv rtl/core/alu.sv
+read_verilog -sv rtl/core/branch_unit.sv
+read_verilog -sv rtl/core/hazard_unit.sv
+read_verilog -sv rtl/core/riscv_core.sv
+read_verilog -sv rtl/cache/icache.sv
+read_verilog -sv rtl/cache/dcache.sv
+read_verilog -sv rtl/bus/axi4_lite_master.sv
+read_verilog -sv rtl/clock_gating/clock_gating.sv
+read_verilog -sv rtl/top/riscv_soc_top.sv
+
+# Elaborate top module
+hierarchy -check -top riscv_soc_top
+
+# --- High-level synthesis passes ---
+proc
+flatten
+opt_expr
+opt_clean
+
+# Technology mapping
+techmap
+opt
+
+# --- Map to SKY130 standard cells ---
+# Replace with actual path to SKY130 liberty file
+# dfflibmap -liberty /path/to/sky130_fd_sc_hd__tt_025C_1v80.lib
+# abc -liberty /path/to/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+# For now, use generic mapping
+synth -top riscv_soc_top
+
+# --- Reports ---
+# Area report
+stat
+
+# Write synthesized netlist
+write_verilog -noattr syn/yosys/riscv_soc_synth.v
+write_json syn/yosys/riscv_soc_synth.json
+
+# Print summary
+tee -o syn/yosys/area_report.txt stat
+log "Synthesis complete. Output: syn/yosys/riscv_soc_synth.v"
