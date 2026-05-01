@@ -2,6 +2,8 @@
 
 A 5-stage pipelined RV32I processor with L1 instruction/data caches, AXI4-Lite bus interface, clock gating for low-power design, UVM-based constrained-random verification, SVA formal assertions, and dual-target synthesis (ASIC via Yosys/SKY130 and FPGA via Vivado/Zedboard).
 
+**Author:** Arif Hussain
+
 ## Architecture Overview
 
 ### Pipeline Stages
@@ -208,9 +210,3 @@ To measure power savings from clock gating:
 | Yosys            | ASIC synthesis                   | 0.30+          |
 | OpenSTA          | Static timing analysis           | 2.5+           |
 | Python 3         | Test generation and analysis     | 3.8+           |
-
-## Resume Keywords
-
-Microarchitecture, RTL design, cache hierarchy, AXI4 bus protocol, low-power design,
-clock gating, UVM, constrained-random verification, functional coverage, SVA,
-formal assertions, ASIC synthesis, static timing analysis, timing closure, FPGA prototyping
