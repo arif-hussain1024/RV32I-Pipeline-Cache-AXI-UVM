@@ -49,7 +49,7 @@ Latch-based integrated clock gating (ICG) cells gate idle pipeline stages and in
 ## Directory Structure
 
 ```
-riscv-project/
+RV32I-Pipeline-Cache-AXI-UVM/
 ├── rtl/
 │   ├── core/           # Pipeline stages and core logic
 │   │   ├── riscv_pkg.sv          # Package: types, params, enums
