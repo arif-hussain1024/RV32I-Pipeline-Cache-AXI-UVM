@@ -8,43 +8,43 @@ module riscv_soc_top
   input  logic              clk,
   input  logic              rst_n,
   input  logic              test_en,      // Scan test mode
-
+ 
   // AXI4-Lite Master Interface to external memory/peripherals
   output logic [AXI_ADDR_WIDTH-1:0]  m_axi_awaddr,
   output logic                        m_axi_awvalid,
   input  logic                        m_axi_awready,
   output logic [2:0]                  m_axi_awprot,
-
+ 
   output logic [AXI_DATA_WIDTH-1:0]  m_axi_wdata,
   output logic [AXI_STRB_WIDTH-1:0]  m_axi_wstrb,
   output logic                        m_axi_wvalid,
   input  logic                        m_axi_wready,
-
+ 
   input  logic [1:0]                  m_axi_bresp,
   input  logic                        m_axi_bvalid,
   output logic                        m_axi_bready,
-
+ 
   output logic [AXI_ADDR_WIDTH-1:0]  m_axi_araddr,
   output logic                        m_axi_arvalid,
   input  logic                        m_axi_arready,
   output logic [2:0]                  m_axi_arprot,
-
+ 
   input  logic [AXI_DATA_WIDTH-1:0]  m_axi_rdata,
   input  logic [1:0]                  m_axi_rresp,
   input  logic                        m_axi_rvalid,
   output logic                        m_axi_rready
 );
-
+ 
   // =========================================================================
   // Internal wires
   // =========================================================================
-
+ 
   // Core <-> I-Cache
   logic [XLEN-1:0] core_imem_addr;
   logic [XLEN-1:0] icache_cpu_rdata;
   logic             core_imem_req;
   logic             icache_cpu_ready;
-
+ 
   // Core <-> D-Cache
   logic [XLEN-1:0] core_dmem_addr;
   logic [XLEN-1:0] core_dmem_wdata;
@@ -53,32 +53,30 @@ module riscv_soc_top
   logic             core_dmem_write;
   logic [1:0]       core_dmem_width;
   logic             dcache_cpu_ready;
-
+ 
   // I-Cache <-> AXI
   logic [XLEN-1:0] icache_mem_addr;
   logic             icache_mem_req;
   logic [XLEN-1:0] icache_mem_rdata;
   logic             icache_mem_valid;
-  logic             icache_mem_last;
-
+ 
   // D-Cache <-> AXI (read)
   logic [XLEN-1:0] dcache_mem_rd_addr;
   logic             dcache_mem_rd_req;
   logic [XLEN-1:0] dcache_mem_rdata;
   logic             dcache_mem_rd_valid;
-  logic             dcache_mem_rd_last;
-
+ 
   // D-Cache <-> AXI (write)
   logic [XLEN-1:0] dcache_mem_wr_addr;
   logic [XLEN-1:0] dcache_mem_wr_data;
   logic             dcache_mem_wr_req;
   logic             dcache_mem_wr_done;
-
+ 
   // Clock gating signals
   logic ex_stage_active, mem_stage_active;
   logic icache_active, dcache_active;
   logic clk_ex, clk_mem, clk_icache, clk_dcache;
-
+ 
   // =========================================================================
   // Clock Gating Controller
   // =========================================================================
@@ -95,7 +93,7 @@ module riscv_soc_top
     .clk_icache       (clk_icache),
     .clk_dcache       (clk_dcache)
   );
-
+ 
   // =========================================================================
   // RISC-V Core (5-stage pipeline)
   // Note: Core uses ungated clk for IF/ID/WB stages; EX/MEM use gated clocks
@@ -120,7 +118,7 @@ module riscv_soc_top
     .ex_stage_active  (ex_stage_active),
     .mem_stage_active (mem_stage_active)
   );
-
+ 
   // =========================================================================
   // L1 Instruction Cache
   // =========================================================================
@@ -135,10 +133,9 @@ module riscv_soc_top
     .mem_req      (icache_mem_req),
     .mem_valid    (icache_mem_valid),
     .mem_rdata    (icache_mem_rdata),
-    .mem_last     (icache_mem_last),
     .cache_active (icache_active)
   );
-
+ 
   // =========================================================================
   // L1 Data Cache
   // =========================================================================
@@ -158,14 +155,13 @@ module riscv_soc_top
     .mem_write_req  (dcache_mem_wr_req),
     .mem_rdata      (dcache_mem_rdata),
     .mem_valid      (dcache_mem_rd_valid),
-    .mem_last       (dcache_mem_rd_last),
     .mem_write_done (dcache_mem_wr_done),
     .cache_active   (dcache_active)
   );
-
+ 
   // D-Cache address routing
   assign dcache_mem_wr_addr = dcache_mem_rd_addr;  // Same port in dcache
-
+ 
   // =========================================================================
   // AXI4-Lite Master
   // =========================================================================
@@ -177,13 +173,11 @@ module riscv_soc_top
     .icache_req       (icache_mem_req),
     .icache_rdata     (icache_mem_rdata),
     .icache_valid     (icache_mem_valid),
-    .icache_last      (icache_mem_last),
     // D-Cache read
     .dcache_rd_addr   (dcache_mem_rd_addr),
     .dcache_rd_req    (dcache_mem_rd_req),
     .dcache_rdata     (dcache_mem_rdata),
     .dcache_rd_valid  (dcache_mem_rd_valid),
-    .dcache_rd_last   (dcache_mem_rd_last),
     // D-Cache write
     .dcache_wr_addr   (dcache_mem_wr_addr),
     .dcache_wr_data   (dcache_mem_wr_data),
@@ -210,5 +204,5 @@ module riscv_soc_top
     .m_axi_rvalid     (m_axi_rvalid),
     .m_axi_rready     (m_axi_rready)
   );
-
+ 
 endmodule

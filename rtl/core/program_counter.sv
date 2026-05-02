@@ -14,13 +14,13 @@ module program_counter
   output logic [XLEN-1:0]   pc_out,
   output logic [XLEN-1:0]   pc_plus4
 );
-
+ 
   logic [XLEN-1:0] pc_reg;
   logic [XLEN-1:0] pc_next;
-
+ 
   assign pc_out   = pc_reg;
   assign pc_plus4 = pc_reg + 32'd4;
-
+ 
   // Next PC selection
   always_comb begin
     if (branch_taken || jump)
@@ -28,13 +28,17 @@ module program_counter
     else
       pc_next = pc_plus4;
   end
-
+ 
   // PC register with synchronous reset
+  // Branch/jump always takes priority over stall to prevent
+  // losing the branch target during memory stalls
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n)
       pc_reg <= '0;
+    else if (branch_taken || jump)
+      pc_reg <= branch_target;
     else if (!stall)
       pc_reg <= pc_next;
   end
-
+ 
 endmodule
