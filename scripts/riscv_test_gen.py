@@ -314,11 +314,40 @@ class RV32ISim:
             if rd: self.regs[rd] = (self.pc + imm_u) & 0xFFFFFFFF
         elif opcode == 0x03:  # LOAD
             addr = (rs1_val + imm_i) & 0xFFFFFFFF
+            byte_off = addr & 3
             val = self.memory.get(addr & ~3, 0)
-            if rd: self.regs[rd] = val & 0xFFFFFFFF
+            shifted = (val >> (byte_off * 8)) & 0xFFFFFFFF
+            if funct3 == 0:    # LB
+                result = shifted & 0xFF
+                if result & 0x80: result |= 0xFFFFFF00
+            elif funct3 == 1:  # LH
+                result = shifted & 0xFFFF
+                if result & 0x8000: result |= 0xFFFF0000
+            elif funct3 == 2:  # LW
+                result = val
+            elif funct3 == 4:  # LBU
+                result = shifted & 0xFF
+            elif funct3 == 5:  # LHU
+                result = shifted & 0xFFFF
+            else:
+                result = 0
+            if rd: self.regs[rd] = result & 0xFFFFFFFF
         elif opcode == 0x23:  # STORE
             addr = (rs1_val + imm_s) & 0xFFFFFFFF
-            self.memory[addr & ~3] = rs2_val & 0xFFFFFFFF
+            byte_off = addr & 3
+            word_addr = addr & ~3
+            old_val = self.memory.get(word_addr, 0)
+            if funct3 == 0:    # SB
+                mask = 0xFF << (byte_off * 8)
+                new_val = (old_val & ~mask) | ((rs2_val & 0xFF) << (byte_off * 8))
+            elif funct3 == 1:  # SH
+                mask = 0xFFFF << (byte_off * 8)
+                new_val = (old_val & ~mask) | ((rs2_val & 0xFFFF) << (byte_off * 8))
+            elif funct3 == 2:  # SW
+                new_val = rs2_val
+            else:
+                new_val = old_val
+            self.memory[word_addr] = new_val & 0xFFFFFFFF
         elif opcode == 0x63:  # BRANCH
             taken = self._branch(rs1_val, rs2_val, funct3)
             if taken:

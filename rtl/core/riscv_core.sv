@@ -157,8 +157,9 @@ module riscv_core
   always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n)
       id_ex_reg <= '0;
-    else if (flush || bubble_ex)
-      id_ex_reg <= '0;  // Flush or insert bubble
+    else if ((flush && !mem_stall) || bubble_ex)
+      id_ex_reg <= '0;  // Flush or insert bubble (but not during mem_stall
+                         // so JAL/JALR can propagate to EX/MEM for link write)
     else if (!mem_stall)
       id_ex_reg <= id_ex_next;
   end
@@ -246,7 +247,9 @@ module riscv_core
 
   // Load data with sign/zero extension
   logic [XLEN-1:0] load_data;
-  assign load_data = sign_extend(dmem_rdata, ex_mem_reg.mem_width, ex_mem_reg.mem_unsigned);
+  assign load_data = sign_extend(dmem_rdata, ex_mem_reg.mem_width,
+                                 ex_mem_reg.mem_unsigned,
+                                 ex_mem_reg.alu_result[1:0]);
 
   // MEM/WB Pipeline Register
   always_comb begin

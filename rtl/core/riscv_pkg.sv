@@ -217,20 +217,23 @@ package riscv_pkg;
   // Helper Functions
   // -------------------------------------------------------------------------
 
-  // Sign extension
+  // Sign extension with byte offset handling
   function automatic logic [XLEN-1:0] sign_extend(
     input logic [XLEN-1:0] data,
     input mem_width_t width,
-    input logic unsigned_load
+    input logic unsigned_load,
+    input logic [1:0] byte_offset
   );
+    logic [XLEN-1:0] shifted;
+    shifted = data >> (byte_offset * 8);  // Align the target byte/half to bit 0
     case (width)
       MEM_BYTE: begin
-        if (unsigned_load) return {24'b0, data[7:0]};
-        else               return {{24{data[7]}}, data[7:0]};
+        if (unsigned_load) return {24'b0, shifted[7:0]};
+        else               return {{24{shifted[7]}}, shifted[7:0]};
       end
       MEM_HALF: begin
-        if (unsigned_load) return {16'b0, data[15:0]};
-        else               return {{16{data[15]}}, data[15:0]};
+        if (unsigned_load) return {16'b0, shifted[15:0]};
+        else               return {{16{shifted[15]}}, shifted[15:0]};
       end
       default: return data;
     endcase

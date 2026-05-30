@@ -110,14 +110,16 @@ class riscv_scoreboard extends uvm_scoreboard;
 
       7'b0000011: begin  // LOAD
         logic [31:0] addr = rs1_val + imm_i;
+        logic [1:0]  byte_off = addr[1:0];
         logic [31:0] mem_val = ref_memory.exists(addr & ~32'h3) ?
                                ref_memory[addr & ~32'h3] : '0;
+        logic [31:0] shifted = mem_val >> (byte_off * 8);
         case (funct3)
-          3'b000: result = {{24{mem_val[7]}}, mem_val[7:0]};     // LB
-          3'b001: result = {{16{mem_val[15]}}, mem_val[15:0]};   // LH
+          3'b000: result = {{24{shifted[7]}}, shifted[7:0]};      // LB
+          3'b001: result = {{16{shifted[15]}}, shifted[15:0]};    // LH
           3'b010: result = mem_val;                                // LW
-          3'b100: result = {24'b0, mem_val[7:0]};                 // LBU
-          3'b101: result = {16'b0, mem_val[15:0]};                // LHU
+          3'b100: result = {24'b0, shifted[7:0]};                  // LBU
+          3'b101: result = {16'b0, shifted[15:0]};                 // LHU
           default: result = '0;
         endcase
         if (rd != 0) ref_regs[rd] = result;
@@ -125,7 +127,22 @@ class riscv_scoreboard extends uvm_scoreboard;
 
       7'b0100011: begin  // STORE
         logic [31:0] addr = rs1_val + imm_s;
-        ref_memory[addr & ~32'h3] = rs2_val;  // Simplified: full word store
+        logic [1:0]  byte_off = addr[1:0];
+        logic [31:0] word_addr = addr & ~32'h3;
+        logic [31:0] old_val = ref_memory.exists(word_addr) ? ref_memory[word_addr] : '0;
+        logic [31:0] new_val;
+        case (funct3)
+          3'b000: begin  // SB
+            new_val = old_val;
+            new_val[byte_off*8 +: 8] = rs2_val[7:0];
+          end
+          3'b001: begin  // SH
+            new_val = old_val;
+            new_val[byte_off*8 +: 16] = rs2_val[15:0];
+          end
+          default: new_val = rs2_val;  // SW
+        endcase
+        ref_memory[word_addr] = new_val;
       end
 
       7'b1100011: begin  // BRANCH
