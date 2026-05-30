@@ -4,7 +4,7 @@
 ## =============================================================================
 
 ## Clock (100 MHz from Zynq PS or external oscillator)
-create_clock -period 10.000 -name sys_clk [get_ports clk]
+create_clock -period 18.000 -name sys_clk [get_ports clk]
 
 ## Reset (active-low, directly mapped to button or PS)
 set_property PACKAGE_PIN T18 [get_ports rst_n]
