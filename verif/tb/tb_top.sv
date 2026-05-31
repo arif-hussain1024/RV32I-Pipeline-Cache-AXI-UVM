@@ -60,30 +60,29 @@ module tb_top;
   );
 
   // =========================================================================
-  // SVA Bind Statements
+  // SVA Assertions (direct instantiation instead of bind)
   // =========================================================================
 
-  // Bind AXI4-Lite assertions to the AXI interface
-  bind axi4_lite_if axi4_lite_sva u_axi_sva (
+  axi4_lite_sva u_axi_sva (
     .clk      (clk),
     .rst_n    (rst_n),
-    .awaddr   (m_awaddr),
-    .awvalid  (m_awvalid),
-    .awready  (s_awready),
-    .wdata    (m_wdata),
-    .wstrb    (m_wstrb),
-    .wvalid   (m_wvalid),
-    .wready   (s_wready),
-    .bresp    (s_bresp),
-    .bvalid   (s_bvalid),
-    .bready   (m_bready),
-    .araddr   (m_araddr),
-    .arvalid  (m_arvalid),
-    .arready  (s_arready),
-    .rdata    (s_rdata),
-    .rresp    (s_rresp),
-    .rvalid   (s_rvalid),
-    .rready   (m_rready)
+    .awaddr   (axi_if.m_awaddr),
+    .awvalid  (axi_if.m_awvalid),
+    .awready  (axi_if.s_awready),
+    .wdata    (axi_if.m_wdata),
+    .wstrb    (axi_if.m_wstrb),
+    .wvalid   (axi_if.m_wvalid),
+    .wready   (axi_if.s_wready),
+    .bresp    (axi_if.s_bresp),
+    .bvalid   (axi_if.s_bvalid),
+    .bready   (axi_if.m_bready),
+    .araddr   (axi_if.m_araddr),
+    .arvalid  (axi_if.m_arvalid),
+    .arready  (axi_if.s_arready),
+    .rdata    (axi_if.s_rdata),
+    .rresp    (axi_if.s_rresp),
+    .rvalid   (axi_if.s_rvalid),
+    .rready   (axi_if.m_rready)
   );
 
   // =========================================================================
