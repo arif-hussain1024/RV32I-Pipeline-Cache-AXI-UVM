@@ -149,14 +149,7 @@ class riscv_coverage extends uvm_subscriber #(axi4_lite_txn);
   endfunction
 
   function void report_phase(uvm_phase phase);
-    `uvm_info("COV", $sformatf(
-      "\n========== Coverage Report ==========\n" +
-      "Instruction types: %.1f%%\n" +
-      "Hazards:           %.1f%%\n" +
-      "Cache:             %.1f%%\n" +
-      "Branches:          %.1f%%\n" +
-      "AXI:               %.1f%%\n" +
-      "=====================================",
+    `uvm_info("COV", $sformatf("\n========== Coverage Report ==========\nInstruction types: %.1f%%\nHazards:           %.1f%%\nCache:             %.1f%%\nBranches:          %.1f%%\nAXI:               %.1f%%\n=====================================",
       cg_instr_types.get_coverage(),
       cg_hazards.get_coverage(),
       cg_cache.get_coverage(),

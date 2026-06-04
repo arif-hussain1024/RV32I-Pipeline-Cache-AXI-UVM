@@ -60,9 +60,10 @@ module tb_top;
   );
 
   // =========================================================================
-  // SVA Assertions (direct instantiation instead of bind)
+  // SVA Assertions
   // =========================================================================
 
+  // AXI4-Lite protocol assertions (direct instantiation)
   axi4_lite_sva u_axi_sva (
     .clk      (clk),
     .rst_n    (rst_n),
@@ -84,6 +85,28 @@ module tb_top;
     .rvalid   (axi_if.s_rvalid),
     .rready   (axi_if.m_rready)
   );
+
+  // Pipeline invariant assertions (connected via hierarchical references)
+  pipeline_sva u_pipeline_sva (
+    .clk        (clk),
+    .rst_n      (rst_n),
+    .if_id_reg  (u_dut.u_core.if_id_reg),
+    .id_ex_reg  (u_dut.u_core.id_ex_reg),
+    .ex_mem_reg (u_dut.u_core.ex_mem_reg),
+    .mem_wb_reg (u_dut.u_core.mem_wb_reg),
+    .fwd_a      (u_dut.u_core.fwd_a),
+    .fwd_b      (u_dut.u_core.fwd_b),
+    .stall_if   (u_dut.u_core.stall_if),
+    .stall_id   (u_dut.u_core.stall_id),
+    .bubble_ex  (u_dut.u_core.bubble_ex),
+    .flush      (u_dut.u_core.flush),
+    .wb_en      (u_dut.u_core.wb_en),
+    .wb_addr    (u_dut.u_core.wb_addr)
+  );
+
+  // Note: dcache_sva requires unpacked array ports (way_valid, way_dirty)
+  // which cannot be connected through hierarchical references in most tools.
+  // D-Cache coherency is verified through the scoreboard and AXI monitoring.
 
   // =========================================================================
   // UVM Configuration and Run

@@ -59,9 +59,8 @@ class axi4_lite_driver extends uvm_driver #(axi4_lite_txn);
         vif.s_rresp  <= 2'b00;  // OKAY
         vif.s_rvalid <= 1'b1;
 
-        // Wait for RREADY
-        while (!vif.m_rready) @(posedge vif.clk);
-        @(posedge vif.clk);
+        // Wait for RREADY handshake to complete, then deassert immediately
+        @(posedge vif.clk iff vif.m_rready);
         vif.s_rvalid <= 1'b0;
       end
     end
@@ -93,8 +92,8 @@ class axi4_lite_driver extends uvm_driver #(axi4_lite_txn);
         vif.s_bresp  <= 2'b00;  // OKAY
         vif.s_bvalid <= 1'b1;
 
-        while (!vif.m_bready) @(posedge vif.clk);
-        @(posedge vif.clk);
+        // Wait for BREADY handshake to complete, then deassert immediately
+        @(posedge vif.clk iff vif.m_bready);
         vif.s_bvalid <= 1'b0;
       end
     end

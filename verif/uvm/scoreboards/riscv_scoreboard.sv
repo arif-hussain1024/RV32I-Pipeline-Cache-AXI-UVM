@@ -210,13 +210,7 @@ class riscv_scoreboard extends uvm_scoreboard;
   endfunction
 
   function void report_phase(uvm_phase phase);
-    `uvm_info("SCBD", $sformatf(
-      "\n========== Scoreboard Report ==========\n" +
-      "Instructions executed: %0d\n" +
-      "Mismatches:           %0d\n" +
-      "AXI Read transactions:  %0d\n" +
-      "AXI Write transactions: %0d\n" +
-      "=======================================",
+    `uvm_info("SCBD", $sformatf("\n========== Scoreboard Report ==========\nInstructions executed: %0d\nMismatches:           %0d\nAXI Read transactions:  %0d\nAXI Write transactions: %0d\n=======================================",
       instr_count, mismatch_count, axi_rd_count, axi_wr_count), UVM_LOW)
     if (mismatch_count > 0)
       `uvm_error("SCBD", "TEST FAILED - mismatches detected")
