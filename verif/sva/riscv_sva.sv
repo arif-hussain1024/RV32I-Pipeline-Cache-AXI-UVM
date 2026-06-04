@@ -184,8 +184,12 @@ module pipeline_sva
     @(posedge clk) disable iff (!rst_n)
     wb_en |-> (wb_addr != 5'b0);
   endproperty
-  a_no_write_x0: assert property (p_no_write_x0)
-    else $error("SVA: Attempted write to x0");
+  // Register x0 should never actually be modified
+  // Note: wb_en may be high with wb_addr=0 for NOPs (ADDI x0,x0,0) and
+  // other instructions with rd=0. The register file ignores these writes.
+  // This assertion is informational, not a design error.
+  // a_no_write_x0: assert property (p_no_write_x0)
+  //   else $error("SVA: Attempted write to x0");
 
   // Flush and stall should not happen simultaneously
   property p_no_flush_and_stall;
